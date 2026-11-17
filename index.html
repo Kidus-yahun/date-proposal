@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>important question 🫣</title>
+  <title>important question for Rodi 🫣</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
   
   <!-- Fonts -->
@@ -268,7 +268,7 @@
         </div>
 
         <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-bold leading-tight tracking-tight mb-3">
-          ok <span id="recipientName" class="text-white"></span>so real quick...<br>
+          hi <span id="recipientName" class="text-neonPink drop-shadow-[0_0_12px_rgba(255,46,147,0.7)]">Rodi</span>, so real quick...<br>
           will you go on a <span class="text-neonPink drop-shadow-[0_0_12px_rgba(255,46,147,0.7)]">date</span> with me?
         </h1>
 
@@ -594,27 +594,27 @@
     let dodgeCount = 0;
     let emailDispatched = false;
 
-    // URL parameters (e.g. ?name=Sarah&from=Kidus&email=yahunsewkidus@gmail.com&phone=...)
+    // URL parameters (e.g. ?name=Rodi&from=Kidus&email=yahunsewkidus@gmail.com&phone=...)
     const urlParams = new URLSearchParams(window.location.search);
-    const customName = urlParams.get('name') || urlParams.get('to');
-    const senderName = urlParams.get('from') || urlParams.get('sender') || '';
+    const defaultRecipient = 'Rodi';
+    const customName = urlParams.get('name') || urlParams.get('to') || defaultRecipient;
+    const defaultSender = 'Kidus';
+    const senderName = urlParams.get('from') || urlParams.get('sender') || defaultSender;
     const senderPhone = urlParams.get('phone') || '';
     
     // PRIMARY DEFAULT EMAIL: Kidus's email if none passed
     const defaultEmail = 'yahunsewkidus@gmail.com';
     const notificationEmail = urlParams.get('email') || defaultEmail;
 
-    if (customName) {
-      const recipientSpan = document.getElementById('recipientName');
-      if (recipientSpan) recipientSpan.textContent = customName + ', ';
-    }
+    // Set page title & recipient name
+    document.title = `important question for ${customName} 🫣`;
+    const recipientSpan = document.getElementById('recipientName');
+    if (recipientSpan) recipientSpan.textContent = customName;
 
-    if (senderName) {
-      const badge = document.getElementById('senderBadge');
-      if (badge) badge.textContent = `From ${senderName}`;
-      const author = document.getElementById('summaryAuthor');
-      if (author) author.textContent = `${senderName} (with zero chill)`;
-    }
+    const badge = document.getElementById('senderBadge');
+    if (badge) badge.textContent = `For ${customName} 💖`;
+    const author = document.getElementById('summaryAuthor');
+    if (author) author.textContent = `${senderName} (with zero chill)`;
 
     // Step Navigation
     function goToStep(step) {
@@ -759,9 +759,9 @@
       emailDispatched = true;
 
       const payload = {
-        _subject: `🎉 SHE SAID YES!! Date Proposal Accepted by ${customName || 'Your Crush'}!`,
-        CrushName: customName || 'Crush',
-        SentBy: senderName || 'You',
+        _subject: `🎉 ${customName.toUpperCase()} SAID YES!! Date Proposal Accepted! 💖`,
+        CrushName: customName,
+        SentBy: senderName,
         Activity: selectedActivity,
         When: selectedTime,
         VibeCheck: "immaculate, actually",
