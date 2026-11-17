@@ -131,11 +131,14 @@
       transform: scale(1) translateY(0);
     }
 
-    /* Runaway button */
-    #noBtn {
+    /* Runaway button & Untouchable Fancy Dinner */
+    #noBtn, #fancyDinnerCard {
       position: relative;
       transition: top 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
       will-change: top, left, transform;
+    }
+    #fancyDinnerCard {
+      z-index: 25;
     }
 
     /* Romantic Floating Hearts Background */
@@ -314,9 +317,10 @@
         </p>
 
         <!-- 2x3 Grid of Date Ideas -->
-        <div class="grid grid-cols-2 gap-3 text-left mb-6">
+        <div class="grid grid-cols-2 gap-3 text-left mb-4 relative">
           
-          <div class="option-card rounded-2xl p-4 cursor-pointer flex items-center gap-3" onclick="selectActivity(this, '🍝 fancy dinner')">
+          <!-- UNTOUCHABLE RUNAWAY FANCY DINNER -->
+          <div id="fancyDinnerCard" class="option-card rounded-2xl p-4 cursor-pointer flex items-center gap-3">
             <span class="text-3xl">🍝</span>
             <span class="font-medium text-sm sm:text-base">fancy dinner</span>
           </div>
@@ -347,6 +351,11 @@
           </div>
 
         </div>
+
+        <!-- Funny remarks when she tries to click fancy dinner -->
+        <p id="fancyDinnerReaction" class="text-xs sm:text-sm text-neonPink/90 font-medium mb-5 opacity-0 transition-opacity duration-300 min-h-[20px]">
+          in this economy?? 😂💸
+        </p>
 
         <button onclick="goToStep(3)" class="w-full bg-neonViolet hover:bg-violet-600 active:scale-98 font-display font-semibold text-white py-3.5 rounded-full text-base sm:text-lg shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all cursor-pointer">
           ok noted, next →
@@ -660,6 +669,7 @@
 
     // Activity Selection
     function selectActivity(element, activity) {
+      if (activity.includes('fancy dinner')) return; // strictly untouchable!
       AudioFX.playPop();
       document.querySelectorAll('#step2 .option-card').forEach(c => c.classList.remove('selected'));
       element.classList.add('selected');
@@ -719,6 +729,54 @@
     noBtn.addEventListener('mousemove', dodgeNoButton);
     noBtn.addEventListener('touchstart', (e) => dodgeNoButton(e), { passive: false });
     noBtn.addEventListener('click', (e) => dodgeNoButton(e));
+
+    // ==========================================
+    // UNTOUCHABLE RUNAWAY FANCY DINNER
+    // ==========================================
+    const fancyDinnerCard = document.getElementById('fancyDinnerCard');
+    const fancyDinnerReaction = document.getElementById('fancyDinnerReaction');
+    let fancyDodgeCount = 0;
+
+    const fancyRemarks = [
+      "in this economy?? 😂💸",
+      "my wallet is not ready for fancy dinner 💳❌",
+      "fancy dinner said: 🏃💨 nope!",
+      `we have food at home ${customName}! 😭🍝`,
+      "pick something else please my card will decline 💀",
+      "the waiter said the table ran away 🏃‍♂️💨"
+    ];
+
+    function dodgeFancyDinner(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      AudioFX.playWhoosh();
+      fancyDodgeCount++;
+
+      if (fancyDinnerReaction) {
+        fancyDinnerReaction.style.opacity = '1';
+        fancyDinnerReaction.textContent = fancyRemarks[(fancyDodgeCount - 1) % fancyRemarks.length];
+      }
+
+      const maxX = 120;
+      const maxY = 90;
+
+      const randomX = (Math.random() - 0.5) * (maxX * 2);
+      const randomY = (Math.random() - 0.5) * (maxY * 2);
+
+      fancyDinnerCard.style.position = 'relative';
+      fancyDinnerCard.style.left = `${randomX}px`;
+      fancyDinnerCard.style.top = `${randomY}px`;
+      fancyDinnerCard.style.transform = `scale(0.92) rotate(${(Math.random() - 0.5) * 22}deg)`;
+    }
+
+    if (fancyDinnerCard) {
+      fancyDinnerCard.addEventListener('mouseenter', dodgeFancyDinner);
+      fancyDinnerCard.addEventListener('mousemove', dodgeFancyDinner);
+      fancyDinnerCard.addEventListener('touchstart', (e) => dodgeFancyDinner(e), { passive: false });
+      fancyDinnerCard.addEventListener('click', (e) => dodgeFancyDinner(e));
+    }
 
     // ==========================================
     // CONFETTI CELEBRATION
