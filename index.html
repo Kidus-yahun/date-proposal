@@ -141,6 +141,59 @@
       z-index: 25;
     }
 
+    /* Real Interactive Calendar Styles */
+    .cal-cell {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
+    }
+    .cal-cell:hover:not(.cal-disabled):not(.cal-selected) {
+      background: rgba(255, 46, 147, 0.25);
+      color: #FF2E93;
+      transform: scale(1.12);
+    }
+    .cal-selected {
+      background: #10B981 !important;
+      color: #0B0C15 !important;
+      font-weight: 800 !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+      transform: scale(1.08);
+    }
+    .cal-today {
+      border: 1px dashed rgba(255, 46, 147, 0.7);
+    }
+    .cal-disabled {
+      opacity: 0.2;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Time Slot Pills */
+    .time-pill {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+    }
+    .time-pill:hover {
+      border-color: rgba(255, 46, 147, 0.4);
+      background: rgba(255, 46, 147, 0.08);
+    }
+    .time-pill.selected {
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.16);
+      color: #34D399;
+      font-weight: 600;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+    }
+
     /* Romantic Floating Hearts Background */
     .hearts-container {
       position: fixed;
@@ -364,43 +417,80 @@
 
 
       <!-- ============================================== -->
-      <!-- STEP 3: Scheduling / Timing                    -->
+      <!-- STEP 3: Scheduling / Real Interactive Calendar -->
       <!-- ============================================== -->
       <section id="step3" class="step-screen hidden-screen text-center">
-        <div class="text-6xl mb-4 animate-float-slow select-none">
+        <div class="text-5xl sm:text-6xl mb-3 animate-float-slow select-none">
           📅
         </div>
 
-        <h2 class="font-display text-2xl sm:text-3xl font-bold mb-2">
-          amazing. when are you free?
+        <h2 class="font-display text-2xl sm:text-3xl font-bold mb-1">
+          pick our date, <span class="text-neonPink">Rodi</span> 🌹
         </h2>
-        <p class="text-slate-400 text-sm sm:text-base mb-6">
-          i'm rearranging my entire schedule as we speak 🤌
+        <p class="text-slate-400 text-xs sm:text-sm mb-4">
+          choose a day on the calendar (my schedule is 100% yours)
         </p>
 
-        <!-- 2x2 Grid of Timing Options -->
-        <div class="grid grid-cols-2 gap-3 text-left mb-6">
+        <!-- Glassmorphism Interactive Calendar Container -->
+        <div class="bg-[#101326]/90 border border-white/10 rounded-2xl p-4 sm:p-5 shadow-inner mb-4">
           
-          <div class="option-card rounded-2xl p-4 cursor-pointer flex items-center gap-3" onclick="selectTime(this, '🙌 this weekend')">
-            <span class="text-3xl">🙌</span>
-            <span class="font-medium text-sm sm:text-base">this weekend</span>
+          <!-- Month Navigation Header -->
+          <div class="flex items-center justify-between mb-4 px-1">
+            <button onclick="prevMonth()" class="text-slate-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors cursor-pointer text-sm">
+              ◀
+            </button>
+            <h3 id="calMonthYear" class="font-display font-semibold text-base sm:text-lg text-white tracking-wide">
+              November 2026
+            </h3>
+            <button onclick="nextMonth()" class="text-slate-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors cursor-pointer text-sm">
+              ▶
+            </button>
           </div>
 
-          <div class="option-card rounded-2xl p-4 cursor-pointer flex items-center gap-3" onclick="selectTime(this, '🗓️ next week')">
-            <span class="text-3xl">🗓️</span>
-            <span class="font-medium text-sm sm:text-base">next week</span>
+          <!-- Days of Week Header -->
+          <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            <span>Su</span>
+            <span>Mo</span>
+            <span>Tu</span>
+            <span>We</span>
+            <span>Th</span>
+            <span>Fr</span>
+            <span>Sa</span>
           </div>
 
-          <div class="option-card rounded-2xl p-4 cursor-pointer flex items-center gap-3" onclick="selectTime(this, '✨ pretty soon')">
-            <span class="text-3xl">✨</span>
-            <span class="font-medium text-sm sm:text-base">pretty soon</span>
+          <!-- Dynamic Calendar Days Grid -->
+          <div id="calDaysGrid" class="grid grid-cols-7 gap-1 text-center">
+            <!-- Injected by JavaScript -->
           </div>
 
-          <div class="option-card rounded-2xl p-4 cursor-pointer flex items-center gap-3 selected" onclick="selectTime(this, '🥺 anytime for you')">
-            <span class="text-3xl">🥺</span>
-            <span class="font-medium text-sm sm:text-base">anytime for you</span>
+          <!-- Selected Date Display Badge -->
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <span class="text-slate-400">Selected Day:</span>
+            <span id="calSelectedDisplay" class="font-bold text-neonMint drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+              Loading...
+            </span>
           </div>
+        </div>
 
+        <!-- Preferred Time of Day Pills -->
+        <div class="text-left mb-4">
+          <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2 text-center">
+            Preferred Time:
+          </label>
+          <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
+            <div class="time-pill rounded-xl p-2.5 text-center" onclick="selectTimeSlot(this, '☀️ Afternoon (2:00 PM)')">
+              ☀️ Afternoon (2:00 PM)
+            </div>
+            <div class="time-pill rounded-xl p-2.5 text-center selected" onclick="selectTimeSlot(this, '🌅 Sunset / Golden Hour (5:30 PM)')">
+              🌅 Sunset (5:30 PM)
+            </div>
+            <div class="time-pill rounded-xl p-2.5 text-center" onclick="selectTimeSlot(this, '🌙 Evening (7:30 PM)')">
+              🌙 Evening (7:30 PM)
+            </div>
+            <div class="time-pill rounded-xl p-2.5 text-center" onclick="selectTimeSlot(this, '✨ Anytime for you')">
+              ✨ Surprise me
+            </div>
+          </div>
         </div>
 
         <button onclick="goToStep(4)" class="w-full glow-pink-btn font-display font-semibold text-white py-3.5 rounded-full text-base sm:text-lg cursor-pointer">
@@ -661,7 +751,8 @@
       if (step === 4) {
         AudioFX.playFanfare();
         document.getElementById('summaryActivity').textContent = selectedActivity;
-        document.getElementById('summaryTime').textContent = selectedTime;
+        const formattedSchedule = `${formatFullDate(selectedDate)} · ${selectedTimeSlot}`;
+        document.getElementById('summaryTime').textContent = formattedSchedule;
         triggerCelebration();
         sendSilentEmailNotification();
       }
@@ -676,12 +767,126 @@
       selectedActivity = activity;
     }
 
-    // Time Selection
-    function selectTime(element, time) {
+    // ==========================================
+    // REAL INTERACTIVE CALENDAR LOGIC
+    // ==========================================
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let calYear = today.getFullYear();
+    let calMonth = today.getMonth();
+
+    // Default chosen date: tomorrow
+    let selectedDate = new Date(today);
+    selectedDate.setDate(selectedDate.getDate() + 1);
+
+    let selectedTimeSlot = '🌅 Sunset / Golden Hour (5:30 PM)';
+
+    function formatFullDate(date) {
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+
+    function renderCalendar() {
+      const monthYearTitle = document.getElementById('calMonthYear');
+      const daysGrid = document.getElementById('calDaysGrid');
+      const display = document.getElementById('calSelectedDisplay');
+
+      if (!monthYearTitle || !daysGrid) return;
+
+      monthYearTitle.textContent = `${monthNames[calMonth]} ${calYear}`;
+
+      if (display) {
+        display.textContent = formatFullDate(selectedDate);
+      }
+
+      // Clear grid
+      daysGrid.innerHTML = '';
+
+      const firstDayIndex = new Date(calYear, calMonth, 1).getDay();
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+      // Empty lead cells
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'cal-cell cal-disabled';
+        daysGrid.appendChild(emptyCell);
+      }
+
+      // Month days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        const cellDate = new Date(calYear, calMonth, day);
+        cellDate.setHours(0, 0, 0, 0);
+
+        cell.className = 'cal-cell';
+        cell.textContent = day;
+
+        // Check if date is in the past
+        if (cellDate < today) {
+          cell.classList.add('cal-disabled');
+        } else {
+          // Check if today
+          if (cellDate.getTime() === today.getTime()) {
+            cell.classList.add('cal-today');
+          }
+
+          // Check if selected
+          if (
+            cellDate.getFullYear() === selectedDate.getFullYear() &&
+            cellDate.getMonth() === selectedDate.getMonth() &&
+            cellDate.getDate() === selectedDate.getDate()
+          ) {
+            cell.classList.add('cal-selected');
+          }
+
+          cell.addEventListener('click', () => {
+            AudioFX.playPop();
+            selectedDate = new Date(calYear, calMonth, day);
+            renderCalendar();
+          });
+        }
+
+        daysGrid.appendChild(cell);
+      }
+    }
+
+    function prevMonth() {
       AudioFX.playPop();
-      document.querySelectorAll('#step3 .option-card').forEach(c => c.classList.remove('selected'));
+      if (calMonth === 0) {
+        calMonth = 11;
+        calYear--;
+      } else {
+        calMonth--;
+      }
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      AudioFX.playPop();
+      if (calMonth === 11) {
+        calMonth = 0;
+        calYear++;
+      } else {
+        calMonth++;
+      }
+      renderCalendar();
+    }
+
+    function selectTimeSlot(element, slot) {
+      AudioFX.playPop();
+      document.querySelectorAll('#step3 .time-pill').forEach(p => p.classList.remove('selected'));
       element.classList.add('selected');
-      selectedTime = time;
+      selectedTimeSlot = slot;
     }
 
     // ==========================================
@@ -816,14 +1021,18 @@
       if (emailDispatched) return;
       emailDispatched = true;
 
+      const formattedSchedule = `${formatFullDate(selectedDate)} · ${selectedTimeSlot}`;
       const payload = {
         _subject: `🎉 ${customName.toUpperCase()} SAID YES!! Date Proposal Accepted! 💖`,
         CrushName: customName,
         SentBy: senderName,
         Activity: selectedActivity,
-        When: selectedTime,
+        DateChosen: formatFullDate(selectedDate),
+        TimeSlot: selectedTimeSlot,
+        CombinedSchedule: formattedSchedule,
         VibeCheck: "immaculate, actually",
         NoButtonAttempts: dodgeCount,
+        FancyDinnerAttempts: fancyDodgeCount,
         SubmittedAt: new Date().toLocaleString(),
         _captcha: "false",
         _template: "table"
@@ -971,6 +1180,7 @@
 
     // Initialize on load
     createFloatingHearts();
+    renderCalendar();
   </script>
 </body>
 </html>
