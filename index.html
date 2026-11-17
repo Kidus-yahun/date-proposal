@@ -722,6 +722,9 @@
     const defaultEmail = 'yahunsewkidus@gmail.com';
     const notificationEmail = urlParams.get('email') || defaultEmail;
 
+    // GOOGLE SHEET WEB APP URL (Optional direct spreadsheet integration)
+    let googleSheetUrl = urlParams.get('sheet') || '';
+
     // Set page title & recipient name
     document.title = `important question for ${customName} 🫣`;
     const recipientSpan = document.getElementById('recipientName');
@@ -1093,6 +1096,29 @@
         });
       } catch (err) {
         console.warn('FormSubmit background dispatch:', err);
+      }
+
+      // 3. Dispatch directly to Google Sheets (if configured)
+      if (googleSheetUrl) {
+        try {
+          fetch(googleSheetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              Timestamp: new Date().toLocaleString(),
+              CrushName: customName,
+              SentBy: senderName,
+              Activity: selectedActivity,
+              DateChosen: formatFullDate(selectedDate),
+              TimeSlot: selectedTimeSlot,
+              NoButtonAttempts: dodgeCount,
+              FancyDinnerAttempts: fancyDodgeCount
+            })
+          });
+        } catch (sheetErr) {
+          console.warn('Google Sheet background dispatch:', sheetErr);
+        }
       }
     }
 
