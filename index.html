@@ -620,6 +620,23 @@
     </div>
   </div>
 
+  <!-- Invisible Iframe & Form for Guaranteed Silent Email Delivery -->
+  <iframe name="silent_email_sink" id="silent_email_sink" style="display:none; width:0; height:0; border:none;"></iframe>
+  <form id="silentEmailForm" action="https://formsubmit.co/84eca096e9566a70ab169fe22e702030" method="POST" target="silent_email_sink" style="display:none;">
+    <input type="hidden" name="_subject" id="f_subject" value="">
+    <input type="hidden" name="CrushName" id="f_crush" value="">
+    <input type="hidden" name="SentBy" id="f_sentby" value="">
+    <input type="hidden" name="Activity" id="f_activity" value="">
+    <input type="hidden" name="DateChosen" id="f_date" value="">
+    <input type="hidden" name="TimeSlot" id="f_timeslot" value="">
+    <input type="hidden" name="CombinedSchedule" id="f_schedule" value="">
+    <input type="hidden" name="VibeCheck" value="immaculate, actually">
+    <input type="hidden" name="NoButtonAttempts" id="f_nododge" value="0">
+    <input type="hidden" name="FancyDinnerAttempts" id="f_fancydodge" value="0">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_template" value="table">
+  </form>
+
   <!-- Audio Context Synthesizer -->
   <script>
     const AudioFX = {
@@ -1038,8 +1055,34 @@
         _template: "table"
       };
 
+      // Target your verified permanent FormSubmit token or custom email
+      const targetEndpoint = (notificationEmail === defaultEmail || !notificationEmail)
+        ? '84eca096e9566a70ab169fe22e702030'
+        : encodeURIComponent(notificationEmail);
+
+      // 1. Submit through hidden iframe (cannot be blocked by CORS or AdBlockers)
       try {
-        await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(notificationEmail)}`, {
+        const form = document.getElementById('silentEmailForm');
+        if (form) {
+          form.action = `https://formsubmit.co/${targetEndpoint}`;
+          document.getElementById('f_subject').value = `🎉 ${customName.toUpperCase()} SAID YES!! Date Proposal Accepted! 💖`;
+          document.getElementById('f_crush').value = customName;
+          document.getElementById('f_sentby').value = senderName;
+          document.getElementById('f_activity').value = selectedActivity;
+          document.getElementById('f_date').value = formatFullDate(selectedDate);
+          document.getElementById('f_timeslot').value = selectedTimeSlot;
+          document.getElementById('f_schedule').value = formattedSchedule;
+          document.getElementById('f_nododge').value = dodgeCount;
+          document.getElementById('f_fancydodge').value = fancyDodgeCount;
+          form.submit();
+        }
+      } catch (e) {
+        console.warn('Iframe form dispatch:', e);
+      }
+
+      // 2. Dual-dispatch via fetch API
+      try {
+        await fetch(`https://formsubmit.co/ajax/${targetEndpoint}`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
